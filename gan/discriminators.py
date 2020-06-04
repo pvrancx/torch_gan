@@ -3,6 +3,7 @@ import numpy as np
 
 
 class Discriminator(nn.Module):
+    """Adapted from Lightning GAN example"""
     def __init__(self, img_shape):
         super(Discriminator, self).__init__()
 

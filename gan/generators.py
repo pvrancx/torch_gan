@@ -3,6 +3,8 @@ import numpy as np
 
 
 class Generator(nn.Module):
+    """Adapted from Lightning GAN example"""
+
     def __init__(self, latent_dim, img_shape):
         super(Generator, self).__init__()
         self.img_shape = img_shape

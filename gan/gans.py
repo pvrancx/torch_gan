@@ -12,6 +12,7 @@ from gan.generators import Generator
 
 
 class Gan(LightningModule):
+    """Adapted from Lightning GAN example"""
 
     def __init__(
             self,
