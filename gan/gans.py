@@ -18,6 +18,8 @@ class Gan(LightningModule):
             self,
             img_shape: Tuple[int, int, int],
             latent_dim: int,
+            pos_label: float = 0.9,
+            neg_label: float = 0.1,
             lr: float = 1e-3,
             b1: float = 0.9,
             b2: float = 0.999,
@@ -26,10 +28,14 @@ class Gan(LightningModule):
 
         super(Gan, self).__init__()
 
+        assert 0. <= neg_label < pos_label <= 1., 'Invalid labels'
+
         self.latent_dim = latent_dim
         self.lr = lr
         self.b1 = b1
         self.b2 = b2
+        self.pos_label = pos_label
+        self.neg_label = neg_label
 
         # networks
         self.generator = Generator(latent_dim=latent_dim, img_shape=img_shape)
@@ -76,13 +82,13 @@ class Gan(LightningModule):
 
         # train discriminator
         if optimizer_idx == 1:
-            valid = torch.ones(imgs.size(0), 1)
+            valid = torch.ones(imgs.size(0), 1) * self.pos_label
             if self.on_gpu:
                 valid = valid.cuda(imgs.device.index)
 
             real_loss = self.adversarial_loss(self.discriminator(imgs), valid)
 
-            fake = torch.zeros(imgs.size(0), 1)
+            fake = torch.ones(imgs.size(0), 1) * self.neg_label
             if self.on_gpu:
                 fake = fake.cuda(imgs.device.index)
 
@@ -114,6 +120,8 @@ class Gan(LightningModule):
         parser.add_argument('--lr', type=float, default=1e-3)
         parser.add_argument('--b1', type=float, default=.9)
         parser.add_argument('--b2', type=float, default=.999)
+        parser.add_argument('--neg_label', type=float, default=0.)
+        parser.add_argument('--pos_label', type=float, default=.9)
 
         return parser
 
